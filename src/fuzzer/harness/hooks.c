@@ -117,7 +117,7 @@ void fuzzywuzzy_preload_hooks(void) {
 
 void assert(int x) {
     LOAD_GUARD(assert)
-    save_ra();
+    void *ra = __builtin_return_address(0);
     fuzzywuzzy_log_libc_call(__func__, ra);
 
     if (x) {
@@ -128,7 +128,7 @@ void assert(int x) {
 }
 
 _Noreturn void abort() {
-    save_ra();
+    void *ra = __builtin_return_address(0);
     fuzzywuzzy_log_libc_call(__func__, ra);
 
     fuzzywuzzy_reset(-6);
@@ -138,7 +138,7 @@ _Noreturn void abort() {
 }
 
 _Noreturn void exit(int status) {
-    save_ra();
+    void *ra = __builtin_return_address(0);
     fuzzywuzzy_log_libc_call(__func__, ra);
 
     fuzzywuzzy_reset(status);
@@ -149,7 +149,7 @@ _Noreturn void exit(int status) {
 
 void __stack_chk_fail() {
     LOAD_GUARD(__stack_chk_fail)
-    save_ra();
+    void *ra = __builtin_return_address(0);
     fuzzywuzzy_log_libc_call(__func__, ra);
     //REAL(puts)("crash");
 
@@ -158,7 +158,7 @@ void __stack_chk_fail() {
 
 
 void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset) {
-    save_ra();
+    void *ra = __builtin_return_address(0);
     fuzzywuzzy_log_libc_call(__func__, ra);
 
     void *res = REAL(mmap)(addr, length, prot, flags, fd, offset);
@@ -169,7 +169,7 @@ void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset)
 }
 
 int munmap(void *addr, size_t length) {
-    save_ra();
+    void *ra = __builtin_return_address(0);
     fuzzywuzzy_log_libc_call(__func__, ra);
 
     int res = REAL(munmap)(addr, length);
@@ -188,7 +188,7 @@ int munmap(void *addr, size_t length) {
 }
 
 void (*signal(int sig, void (*func)(int)))(int) {
-    save_ra();
+    void *ra = __builtin_return_address(0);
     fuzzywuzzy_log_libc_call(__func__, ra);
 
     fuzzywuzzy_ctrl.signals[sig] = func;
@@ -212,7 +212,7 @@ int *__libc_start_main(int (*main)(int, char **, char **), int argc, char **ubp_
 }
 
 int fprintf(FILE *f, const char *format, ...) {
-    save_ra();
+    void *ra = __builtin_return_address(0);
     fuzzywuzzy_log_libc_call(__func__, ra);
 
     va_list list;
@@ -223,7 +223,7 @@ int fprintf(FILE *f, const char *format, ...) {
 }
 
 int printf(const char *format, ...) {
-    save_ra();
+    void *ra = __builtin_return_address(0);
     fuzzywuzzy_log_libc_call(__func__, ra);
 
     va_list list;
@@ -234,7 +234,7 @@ int printf(const char *format, ...) {
 }
 
 int sprintf(char *s, const char *format, ...) {
-    save_ra();
+    void *ra = __builtin_return_address(0);
     fuzzywuzzy_log_libc_call(__func__, ra);
 
     va_list list;
@@ -245,7 +245,7 @@ int sprintf(char *s, const char *format, ...) {
 }
 
 int snprintf(char *s, size_t n, const char *format, ...) {
-    save_ra();
+    void *ra = __builtin_return_address(0);
     fuzzywuzzy_log_libc_call(__func__, ra);
 
     va_list list;
@@ -257,7 +257,7 @@ int snprintf(char *s, size_t n, const char *format, ...) {
 
 
 int scanf(const char *format, ...) {
-    save_ra();
+    void *ra = __builtin_return_address(0);
     fuzzywuzzy_log_libc_call(__func__, ra);
 
     va_list list;
@@ -268,7 +268,7 @@ int scanf(const char *format, ...) {
 }
 
 int sscanf(const char *s, const char *format, ...) {
-    save_ra();
+    void *ra = __builtin_return_address(0);
     fuzzywuzzy_log_libc_call(__func__, ra);
 
     va_list list;
@@ -279,7 +279,7 @@ int sscanf(const char *s, const char *format, ...) {
 }
 
 int fscanf(FILE *f, const char *format, ...) {
-    save_ra();
+    void *ra = __builtin_return_address(0);
     fuzzywuzzy_log_libc_call(__func__, ra);
 
     va_list list;

@@ -5,9 +5,9 @@
 
 #define LOAD(FN) *(void**)(&CAT(fuzzywuzzy_real_, FN)) = dlsym(RTLD_NEXT, #FN)
 
-#define LOAD_GUARD(FN)                \
+#define LOAD_GUARD(FN) \
     if (!CAT(fuzzywuzzy_real_, FN)) { \
-        LOAD(FN);                     \
+        LOAD(FN); \
     }
 
 typedef void* void_ptr;
@@ -62,7 +62,7 @@ typedef FILE* FILE_ptr;
 #define FE_7(WHAT, X, ...) WHAT(X), FE_6(WHAT, __VA_ARGS__)
 
 #define GET_MACRO(_0, _1, _2, _3, _4, _5, _6, _7, NAME, ...) NAME
-#define FOR_EACH(action, ...)                                                  \
+#define FOR_EACH(action, ...) \
     GET_MACRO(_0, __VA_ARGS__, FE_7, FE_6, FE_5, FE_4, FE_3, FE_2, FE_1, FE_0) \
     (action, __VA_ARGS__)
 
@@ -75,21 +75,21 @@ typedef FILE* FILE_ptr;
     EXTRACT_TYPE(FN_SIG)     \
     (CAT(*fuzzywuzzy_real_, EXTRACT_NAME(FN_SIG)))(__VA_ARGS__);
 
-#define GEN_WRAPPERNOARG(FN_SIG)                                                                    \
-    GEN_DEF(FN_SIG)                                                                    \
-    FN_SIG() {                                                                           \
-        LOAD_GUARD(EXTRACT_NAME(FN_SIG));                                                           \
-        save_ra();                                                                                  \
-        fuzzywuzzy_log_libc_call(__func__, ra);                                                     \
+#define GEN_WRAPPERNOARG(FN_SIG) \
+    GEN_DEF(FN_SIG) \
+    FN_SIG() { \
+        LOAD_GUARD(EXTRACT_NAME(FN_SIG)); \
+        void *ra = __builtin_return_address(0); \
+        fuzzywuzzy_log_libc_call(__func__, ra); \
         return (*CAT(fuzzywuzzy_real_, EXTRACT_NAME(FN_SIG)))(); \
     }
 
-#define GEN_WRAPPER(FN_SIG, ...)                                                                    \
-    GEN_DEF(FN_SIG, __VA_ARGS__)                                                                    \
-    FN_SIG(__VA_ARGS__) {                                                                           \
-        LOAD_GUARD(EXTRACT_NAME(FN_SIG));                                                           \
-        save_ra();                                                                                  \
-        fuzzywuzzy_log_libc_call(__func__, ra);                                                     \
+#define GEN_WRAPPER(FN_SIG, ...) \
+    GEN_DEF(FN_SIG, __VA_ARGS__) \
+    FN_SIG(__VA_ARGS__) { \
+        LOAD_GUARD(EXTRACT_NAME(FN_SIG)); \
+        void *ra = __builtin_return_address(0); \
+        fuzzywuzzy_log_libc_call(__func__, ra); \
         return (*CAT(fuzzywuzzy_real_, EXTRACT_NAME(FN_SIG)))(FOR_EACH(EXTRACT_NAME, __VA_ARGS__)); \
     }
 
