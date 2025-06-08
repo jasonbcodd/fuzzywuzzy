@@ -11,15 +11,12 @@ sudo dpkg --add-architecture i386
 sudo apt-get -y update
 sudo apt-get install -y libc6:i386 gcc-multilib g++-multilib
 ```
-- Install Poetry: `curl -sSL https://install.python-poetry.org | python3 -`
-- Install packages: `poetry install`
+- Install packages: `uv install`
 
 ## Poetry Commands
-- Install: `poetry install`
-- Run command in venv: `poetry run`
-- Enter sub-shell (like `source venv/bin/activate`): `poetry shell`
-- Add dependency (don't use `pip`): `poetry add <pip package name>`
+- Install: `uv install`
+- Run command in venv: `uv run`
 
 ## Running Tests
-To run all tests, run `pytest` (inside a Poetry shell, `poetry run pytest` outside).
+To run all tests, run `pytest` (inside a Poetry shell, `uv run pytest` outside).
 
