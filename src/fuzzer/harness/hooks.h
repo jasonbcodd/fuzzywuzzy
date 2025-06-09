@@ -1,14 +1,15 @@
 #pragma once
 
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/socket.h>
 
-#define LOAD(FN) *(void**)(&CAT(fuzzywuzzy_real_, FN)) = dlsym(RTLD_NEXT, #FN)
+#define STR(X) STR2(X)
+#define STR2(X) STR3(X)
+#define STR3(X) #X
 
-#define LOAD_GUARD(FN) \
-    if (!CAT(fuzzywuzzy_real_, FN)) { \
-        LOAD(FN); \
-    }
+#define LOAD(FN) *(void**)(&CAT(fuzzywuzzy_real_, FN)) = dlsym(RTLD_NEXT, STR(FN))
 
 typedef void* void_ptr;
 typedef const void* const_void_ptr;
@@ -50,7 +51,8 @@ typedef FILE* FILE_ptr;
 #define CAT(arg1, arg2) CAT1(arg1, arg2)
 #define CAT1(arg1, arg2) CAT2(arg1, arg2)
 #define CAT2(arg1, arg2) CAT3(arg1, arg2)
-#define CAT3(arg1, arg2) arg1##arg2
+#define CAT3(arg1, arg2) CAT4(arg1, arg2)
+#define CAT4(arg1, arg2) arg1##arg2
 
 #define FE_0(WHAT)
 #define FE_1(WHAT, X) WHAT(X)
@@ -71,23 +73,19 @@ typedef FILE* FILE_ptr;
 #define SELECT_NAME(TYPE, NAME) NAME
 #define EXTRACT_NAME(SIG) SPLIT(SELECT_NAME, SIG)
 
-#define GEN_DEF(FN_SIG, ...) \
-    EXTRACT_TYPE(FN_SIG)     \
-    (CAT(*fuzzywuzzy_real_, EXTRACT_NAME(FN_SIG)))(__VA_ARGS__);
+#define DEF(FN_SIG, ...) \
+    EXTRACT_TYPE(FN_SIG) \
+    (CAT(*fuzzywuzzy_real_, EXTRACT_NAME(FN_SIG)))(__VA_ARGS__)
 
-#define GEN_WRAPPERNOARG(FN_SIG) \
-    GEN_DEF(FN_SIG) \
+#define WRAPPERNOARG(FN_SIG) \
     FN_SIG() { \
-        LOAD_GUARD(EXTRACT_NAME(FN_SIG)); \
         void *ra = __builtin_return_address(0); \
         fuzzywuzzy_log_libc_call(__func__, ra); \
         return (*CAT(fuzzywuzzy_real_, EXTRACT_NAME(FN_SIG)))(); \
     }
 
-#define GEN_WRAPPER(FN_SIG, ...) \
-    GEN_DEF(FN_SIG, __VA_ARGS__) \
+#define WRAPPER(FN_SIG, ...) \
     FN_SIG(__VA_ARGS__) { \
-        LOAD_GUARD(EXTRACT_NAME(FN_SIG)); \
         void *ra = __builtin_return_address(0); \
         fuzzywuzzy_log_libc_call(__func__, ra); \
         return (*CAT(fuzzywuzzy_real_, EXTRACT_NAME(FN_SIG)))(FOR_EACH(EXTRACT_NAME, __VA_ARGS__)); \
@@ -97,3 +95,15 @@ typedef FILE* FILE_ptr;
     (*fuzzywuzzy_real_##fn)
 
 void fuzzywuzzy_preload_hooks(void);
+
+extern void (*(*fuzzywuzzy_real_signal)(int, void (*func)(int)))(int);
+extern int *(*fuzzywuzzy_real___libc_start_main)(int (*main)(int, char **, char **), int argc, char **ubp_av, void (*init)(void),
+                                          void (*fini)(void), void (*rtld_fini)(void), void(*stack_end));
+
+#define X_WRAPPER(FN_SIG, ...) extern DEF(FN_SIG, __VA_ARGS__);
+#define X_WRAPPERNOARG(FN_SIG) extern DEF(FN_SIG);
+#define X_DEF(FN_SIG, ...) extern DEF(FN_SIG, __VA_ARGS__);
+#include "hooks.def.h"
+#undef X_DEF
+#undef X_WRAPPERNOARG
+#undef X_WRAPPER

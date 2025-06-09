@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ucontext.h>
+#include <setjmp.h>
 
 #include "socket.h"
 
@@ -12,20 +13,6 @@
 #define NUM_REGIONS 16
 
 #define MMAP_BASE 0x20000000
-
-//#define CTRL_OFFSET "0xbc"  // if everything stop working, check this
-
-#define save_ra()                  \
-    void *ra = NULL;               \
-    __asm__(                       \
-        "mov %[asm_ra], [ebp+4]\n" \
-        : [asm_ra] "=&r"(ra))
-
-#define save_ebx()               \
-    void *ebx = NULL;            \
-    __asm__(                     \
-        "mov %[asm_ra], [ebx]\n" \
-        : [asm_ra] "=&r"(ra))
 
 struct mmap_data {
     void *addr;
@@ -41,19 +28,11 @@ struct memory_region {
 };
 
 struct control_data {
-    void *eax;
-    void *ecx;
-    void *edx;
-    void *ebx;
-    void *esp;
-    void *ebp;
-    void *esi;
-    void *edi;
-
     struct memory_region writable[NUM_REGIONS];
     size_t writable_index;
     void *writable_saved_base;
     void *writable_saved_curr;
+    jmp_buf reset_point;
 
     void *signals[NUM_SIGNALS];
 
