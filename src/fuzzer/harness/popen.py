@@ -2,13 +2,13 @@ import time
 from pathlib import Path
 from subprocess import DEVNULL, PIPE, Popen, TimeoutExpired
 
-from .base import BaseHarness, HarnessResult
+from .base import BaseHarness, BinaryBits, HarnessResult
 
 
 class PopenHarness(BaseHarness):
-    TIMEOUT = 1
+    TIMEOUT = 2
 
-    def __init__(self, binary_path: Path, debug: bool = False):
+    def __init__(self, binary_path: Path, bits: BinaryBits, debug: bool = False):
         self.binary_path = binary_path
 
     def run(self, input: bytes) -> HarnessResult:

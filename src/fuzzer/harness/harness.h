@@ -21,7 +21,6 @@ struct mmap_data {
 
 struct memory_region {
     void *base;
-    void *top;
     size_t size;
 
     void *saved_data;
@@ -32,7 +31,6 @@ struct control_data {
     size_t writable_index;
     void *writable_saved_base;
     void *writable_saved_curr;
-    jmp_buf reset_point;
 
     void *signals[NUM_SIGNALS];
 
@@ -42,20 +40,20 @@ struct control_data {
     int (*original_main_fn)(int, char **, char **);
 
     char buf[BUF_SIZE];
-    volatile int *dummy_malloc;
+    void *stack;
     struct fuzzer_socket_t sock;
 
+    ucontext_t main_context;
     ucontext_t context;
     int last_exit_code;
     char stdin_buf[STDIN_BUF_SIZE];
+    bool do_coverage;
 };
 
 int fuzzywuzzy_main(int argc, char **argv, char **environ);
 void fuzzywuzzy_read_mmap();
 
-void fuzzywuzzy_log_start();
-void fuzzywuzzy_log_reset(int exit_code);
 void fuzzywuzzy_log_libc_call(const char *func_name, void *return_addr);
 
 
-void fuzzywuzzy_reset(int reset_code);
+void fuzzywuzzy_reset(int exit_code);

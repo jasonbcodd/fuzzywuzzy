@@ -6,7 +6,7 @@
 
 #include "hooks.h"
 
-#define DISABLE_SOCKET
+#undef DISABLE_SOCKET
 
 void fuzzywuzzy_init_socket(struct fuzzer_socket_t *sock) {
 #ifdef DISABLE_SOCKET
@@ -26,7 +26,7 @@ void fuzzywuzzy_init_socket(struct fuzzer_socket_t *sock) {
         REAL(abort)();
     }
 
-    int remote_len = sizeof(remote.sun_family) + REAL(strlen)(remote.sun_path) + 2;
+    size_t remote_len = sizeof(remote.sun_family) + REAL(strlen)(remote.sun_path) + 2;
     int result = REAL(connect)(sock_fd, (struct sockaddr *)&remote, remote_len);
     if (result < 0) {
         REAL(abort)();
@@ -86,6 +86,9 @@ int fuzzywuzzy_write_message(struct fuzzer_socket_t *sock, struct fuzzer_msg_t *
             break;
         case MSG_LIBC_CALL:
             data_size = sizeof(struct fuzzer_msg_libc_call_t);
+            break;
+        case MSG_TIMESTAMP:
+            data_size = sizeof(struct fuzzer_msg_timestamp_t);
             break;
         // Fuzzer -> Harness only.
         case MSG_ACK:

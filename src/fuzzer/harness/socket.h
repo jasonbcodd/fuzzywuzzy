@@ -5,12 +5,14 @@
 #include <unistd.h>
 
 #define SOCKET_PATH_ENVVAR "FUZZYWUZZY_SOCKET_PATH"
-#define MAX_FUNCTION_NAME_LENGTH 64
+#define MAX_FUNCTION_NAME_LENGTH 32
+#define MAX_TIMESTAMP_LENGTH 16
 
 #define MSG_ACK 0x01
 #define MSG_TARGET_START 0x02
 #define MSG_TARGET_RESET 0x03
 #define MSG_LIBC_CALL 0x04
+#define MSG_TIMESTAMP 0x05
 
 struct fuzzer_socket_t {
     int conn_fd;
@@ -38,6 +40,11 @@ struct fuzzer_msg_t {
             // Used for pseudo-coverage.
             void *return_addr;
         } libc_call;
+        struct fuzzer_msg_timestamp_t {
+            // Name of event
+            char what[MAX_TIMESTAMP_LENGTH];
+            long long micros;
+        } timestamp;
     } data;
 };
 

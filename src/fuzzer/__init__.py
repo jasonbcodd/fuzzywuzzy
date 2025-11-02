@@ -6,12 +6,12 @@ from typing import BinaryIO, Callable, Optional
 import click
 import magic
 
-from fuzzer.coverage import CoverageGraph, merge_coverage_events
-from fuzzer.harness import Harness, PopenHarness
-from fuzzer.harness.base import HarnessResult
-from fuzzer.reporter import Reporter
-from fuzzer.utils import round_robin
-from fuzzer.wrr import WeightedRoundRobinFlatteningIterator
+from .coverage import CoverageGraph, merge_coverage_events
+from .harness import Harness, PopenHarness
+from .harness.base import HarnessResult, BinaryBits
+from .reporter import Reporter
+from .utils import round_robin
+from .wrr import WeightedRoundRobinFlatteningIterator
 
 from .hunters import MIME_TYPE_TO_HUNTERS, Hunter
 
@@ -41,7 +41,10 @@ def cli(binary: Path, sample_input: BinaryIO, output_file: BinaryIO):
 
     signal.signal(signal.SIGINT, signal_handler)
 
-    result = fuzz(binary, sample_input, reporter.log_result)
+    try:
+        result = fuzz(binary, sample_input, reporter.log_result)
+    except Exception:
+        reporter.print("Harness died")
     if result is not None:
         reporter.print_crash_output(result[1], result[2])
         output_file.write(result[0])
@@ -73,14 +76,16 @@ def fuzz(
 
 
     if "64-bit" in magic.from_file(binary):
-        harness = PopenHarness(binary)
+        harness = Harness(binary, BinaryBits.BITS_64, False, True)
     else:
-        harness = Harness(binary)
+        harness = Harness(binary, BinaryBits.BITS_32, False, True)
 
     coverage_graph = {}
 
     # Initialise the graph with the coverage of the sample input.
-    result = harness.run(sample_input)
+    while True:
+        result = harness.run(sample_input)
+        result_callback(result)
     initial_nodes = merge_coverage_events(coverage_graph, result["events"]) + 1
 
     wrr_iter = WeightedRoundRobinFlatteningIterator(
@@ -107,8 +112,3 @@ def fuzz(
 def sanity():
     """Returns a constant for use in a test to ensure Python is not being weird about imports."""
     return 1337
-
-
-if __name__ == "__main__":
-    print("You pressed Ctrl+C!")
-    cli()

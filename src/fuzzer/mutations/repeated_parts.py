@@ -30,6 +30,7 @@ def repeat_last_segment_mutation(
         original_split.pop()
     if len(original_split) == 0:
         return
-    for _ in range(100):
+    for _ in range(2000):
         original_split.append(original_split[-1])
         yield delimiter.join(original_split)
+        print(end="")
