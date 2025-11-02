@@ -89,7 +89,7 @@ class InProcessHarness(BaseHarness):
                 duration = time.time() - start
 
                 self.process.stdin = open(f"/proc/{self.process.pid}/fd/0", "wb")
-                self._send_ack()
+                #self._send_ack()
 
                 exit_code = msg["data"]["exit_code"]
                 events.append(("exit", exit_code))
@@ -124,13 +124,14 @@ class InProcessHarness(BaseHarness):
         self.server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self.server.bind(socket_path)
         self.server.listen(1)
+        #self.server.setblocking(False)
 
         if self.bits == BinaryBits.BITS_32:
-            harness_filename = "harness_32.so"
+            build_dir = "build32"
         elif self.bits == BinaryBits.BITS_64:
-            harness_filename = "harness_64.so"
+            build_dir = "build64"
 
-        harness_path = str((Path(__file__).parent / harness_filename).resolve())
+        harness_path = str((Path(__file__).parent.parent.parent.parent / build_dir / "libharness.so").resolve())
 
         env = {
             "LD_PRELOAD": harness_path,

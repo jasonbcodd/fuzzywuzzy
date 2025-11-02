@@ -4,10 +4,29 @@ cd "$(dirname "$0")"
 
 sudo dpkg --add-architecture i386
 sudo apt-get update
-sudo apt-get install -y libmagic-dev python3 python3-dev python3-venv libc6:i386 libc6-dev:i386 gcc-multilib g++-multilib git libssl-dev libffi-dev build-essential curl
+sudo apt-get install -y libmagic-dev python3 python3-dev python3-venv
+sudo apt-get install -y libc6:i386 libc6-dev:i386 libc6-dev
+sudo apt-get install -y gcc-multilib g++-multilib ninja-build cmake build-essential
+sudo apt-get install -y git libssl-dev libffi-dev curl
 
 curl -sSL https://bootstrap.pypa.io/get-pip.py | python3 -
 python3 -m pip install -r requirements.txt
 python3 -m pip install -e .
 
-make
+git submodule update --init
+
+rm -rf build32
+mkdir build32
+cd build32
+cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../toolchain32.cmake ..
+ninja
+cd ..
+
+rm -rf build64
+mkdir build64
+cd build64
+cmake -GNinja -DCMAKE_BUILD_TYPE=Release ..
+ninja
+cd ..
+
+uv pip install -e .

@@ -1,8 +1,6 @@
 #pragma once
 
-#include <ucontext.h>
-#include <setjmp.h>
-
+#include "fcontext.h"
 #include "socket.h"
 
 #define STDIN_BUF_SIZE 1048576
@@ -26,6 +24,11 @@ struct memory_region {
     void *saved_data;
 };
 
+struct fuzzywuzzy_args {
+    int argc;
+    char **argv;
+};
+
 struct control_data {
     struct memory_region writable[NUM_REGIONS];
     size_t writable_index;
@@ -43,11 +46,12 @@ struct control_data {
     void *stack;
     struct fuzzer_socket_t sock;
 
-    ucontext_t main_context;
-    ucontext_t context;
+    fcontext_t main_context;
+    fcontext_t context;
     int last_exit_code;
     char stdin_buf[STDIN_BUF_SIZE];
     bool do_coverage;
+    struct fuzzywuzzy_args args;
 };
 
 int fuzzywuzzy_main(int argc, char **argv, char **environ);

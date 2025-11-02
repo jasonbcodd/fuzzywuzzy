@@ -76,16 +76,16 @@ def fuzz(
 
 
     if "64-bit" in magic.from_file(binary):
-        harness = Harness(binary, BinaryBits.BITS_64, False, True)
+        harness = Harness(binary, BinaryBits.BITS_64, False, False)
     else:
-        harness = Harness(binary, BinaryBits.BITS_32, False, True)
+        harness = Harness(binary, BinaryBits.BITS_32, False, False)
 
     coverage_graph = {}
 
     # Initialise the graph with the coverage of the sample input.
-    while True:
-        result = harness.run(sample_input)
-        result_callback(result)
+
+    result = harness.run(sample_input)
+        
     initial_nodes = merge_coverage_events(coverage_graph, result["events"]) + 1
 
     wrr_iter = WeightedRoundRobinFlatteningIterator(

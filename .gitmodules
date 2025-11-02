@@ -1,3 +1,45 @@
 [submodule "src/boost.context"]
 	path = src/boost.context
 	url = https://github.com/boostorg/context.git
+[submodule "external/boost"]
+	path = external/boost
+	url = https://github.com/boostorg/boost.git
+[submodule "external/boost.context"]
+	path = external/boost.context
+	url = https://github.com/boostorg/context.git
+[submodule "external/boost.assert"]
+	path = external/boost.assert
+	url = https://github.com/boostorg/assert.git
+[submodule "external/boost.config"]
+	path = external/boost.config
+	url = https://github.com/boostorg/config.git
+[submodule "external/boost.core"]
+	path = external/boost.core
+	url = https://github.com/boostorg/core.git
+[submodule "external/boost.static_assert"]
+	path = external/boost.static_assert
+	url = https://github.com/boostorg/static_assert.git
+[submodule "external/boost.mp11"]
+	path = external/boost.mp11
+	url = https://github.com/boostorg/mp11.git
+[submodule "external/boost.pool"]
+	path = external/boost.pool
+	url = https://github.com/boostorg/pool.git
+[submodule "external/boost.throw_exception"]
+	path = external/boost.throw_exception
+	url = https://github.com/boostorg/throw_exception.git
+[submodule "external/boost.predef"]
+	path = external/boost.predef
+	url = https://github.com/boostorg/predef.git
+[submodule "external/boost.integer"]
+	path = external/boost.integer
+	url = https://github.com/boostorg/integer.git
+[submodule "external/boost.smart_ptr"]
+	path = external/boost.smart_ptr
+	url = https://github.com/boostorg/smart_ptr.git
+[submodule "external/boost.type_traits"]
+	path = external/boost.type_traits
+	url = https://github.com/boostorg/type_traits.git
+[submodule "external/boost.winapi"]
+	path = external/boost.winapi
+	url = https://github.com/boostorg/winapi.git

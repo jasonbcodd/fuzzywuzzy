@@ -173,3 +173,6 @@ coverage-*.mermaid
 tests/binaries/hang/hang
 tests/binaries/safe/safe
 tests/binaries/segv/segv
+
+build32/
+build64/

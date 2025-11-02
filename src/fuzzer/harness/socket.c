@@ -14,6 +14,7 @@ void fuzzywuzzy_init_socket(struct fuzzer_socket_t *sock) {
 #endif
     char *path = REAL(getenv)(SOCKET_PATH_ENVVAR);
     if (path == NULL) {
+        REAL(puts)("you forgot to connect the socket");
         REAL(abort)();
     }
 
